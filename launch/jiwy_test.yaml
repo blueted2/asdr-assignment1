@@ -1,0 +1,21 @@
+launch:
+- node:
+    pkg: "jiwy_simulator"
+    exec: "jiwy_simulator"
+    name: "sim"
+
+- node:
+    pkg: "image_tools"
+    exec: "cam2image"
+    remap:
+    - 
+      from: /image
+      to: /webcam_input
+
+- node:
+    pkg: "image_tools"
+    exec: "showimage"
+    remap:
+    - 
+      from: /image
+      to: /moving_camera_output
