@@ -17,6 +17,9 @@ public:
   ImageSubscriber()
   : Node("image_subscriber")
   {
+
+    this->declare_parameter("threshold", 5);
+
     subscription_ = this->create_subscription<sensor_msgs::msg::Image>(
       "image", 10, std::bind(&ImageSubscriber::topic_callback, this, _1));
 
@@ -38,9 +41,9 @@ private:
 
     // cv::imshow("windows", gray);
     // cv::waitKey(1);
-
+    int th = this->get_parameter("threshold").get_parameter_value().get<int>();
     double light_level = mean[0];
-    bool light_state = light_level > 100.0f;
+    bool light_state = light_level > th;
 
     auto message = std_msgs::msg::Bool();
     message.data = light_state;
