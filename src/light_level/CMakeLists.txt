@@ -12,11 +12,12 @@ find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(OpenCV REQUIRED)
+find_package(asdfr_interfaces REQUIRED)
 
 add_executable(light_level src/light_level.cpp)
 add_executable(light_position src/light_position.cpp)
 ament_target_dependencies(light_level rclcpp std_msgs sensor_msgs cv_bridge OpenCV)
-ament_target_dependencies(light_position rclcpp std_msgs sensor_msgs cv_bridge OpenCV)
+ament_target_dependencies(light_position rclcpp std_msgs sensor_msgs cv_bridge OpenCV asdfr_interfaces)
 
 install(TARGETS light_level
   DESTINATION lib/${PROJECT_NAME})

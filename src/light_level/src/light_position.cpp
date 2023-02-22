@@ -5,10 +5,9 @@
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/image.hpp"
 #include "std_msgs/msg/bool.hpp"
-#include "geometry_msgs/msg/point.hpp"
 #include "cv_bridge/cv_bridge.h"
-
 #include "opencv2/highgui/highgui.hpp"
+#include "asdfr_interfaces/msg/point2.hpp" // 2D point (x and y coordinates)
 
 using std::placeholders::_1;
 
@@ -23,7 +22,7 @@ public:
     subscription_ = this->create_subscription<sensor_msgs::msg::Image>(
       "image", 10, std::bind(&LightPosition::topic_callback, this, _1));
 
-    publisher_ = this->create_publisher<geometry_msgs::msg::Point>("light_position", 10);
+    publisher_ = this->create_publisher<asdfr_interfaces::msg::Point2>("light_position", 10);
   }
 
 private:
@@ -47,7 +46,7 @@ private:
     cv::Moments moments = cv::moments(threshold_img, true);
     cv::Point center_of_mass = cv::Point(moments.m10 / moments.m00, moments.m01 / moments.m00);
 
-    auto message = geometry_msgs::msg::Point();
+    auto message = asdfr_interfaces::msg::Point2();
 
     message.x = center_of_mass.x;
     message.y = center_of_mass.y;
@@ -56,7 +55,7 @@ private:
   }
   
   rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr subscription_;
-  rclcpp::Publisher<geometry_msgs::msg::Point>::SharedPtr publisher_;
+  rclcpp::Publisher<asdfr_interfaces::msg::Point2>::SharedPtr publisher_;
 };
 
 int main(int argc, char * argv[])
