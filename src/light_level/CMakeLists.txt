@@ -12,20 +12,16 @@ find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(OpenCV REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
 
 add_executable(light_level src/light_level.cpp)
+add_executable(light_position src/light_position.cpp)
 ament_target_dependencies(light_level rclcpp std_msgs sensor_msgs cv_bridge OpenCV)
-
-# target_include_directories(light PUBLIC
-#   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-#   $<INSTALL_INTERFACE:include>)
-
-target_compile_features(light_level PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+ament_target_dependencies(light_position rclcpp std_msgs sensor_msgs cv_bridge OpenCV)
 
 install(TARGETS light_level
+  DESTINATION lib/${PROJECT_NAME})
+
+install(TARGETS light_position
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
