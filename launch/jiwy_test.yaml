@@ -19,8 +19,6 @@ launch:
     name: "sim"
 
 - node:
-    ros__parameters:
-      threshold: 254.0
     pkg: "light_level"
     exec: "light_position"
 
