@@ -16,13 +16,19 @@ find_package(asdfr_interfaces REQUIRED)
 
 add_executable(light_level src/light_level.cpp)
 add_executable(light_position src/light_position.cpp)
+add_executable(pix2rad src/pix2rad.cpp)
+
 ament_target_dependencies(light_level rclcpp std_msgs sensor_msgs cv_bridge OpenCV)
 ament_target_dependencies(light_position rclcpp std_msgs sensor_msgs cv_bridge OpenCV asdfr_interfaces)
+ament_target_dependencies(pix2rad rclcpp std_msgs sensor_msgs cv_bridge OpenCV asdfr_interfaces)
 
 install(TARGETS light_level
   DESTINATION lib/${PROJECT_NAME})
 
 install(TARGETS light_position
+  DESTINATION lib/${PROJECT_NAME})
+
+install(TARGETS pix2rad
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
