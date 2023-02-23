@@ -2,7 +2,7 @@ launch:
 - node:
     pkg: "image_tools"
     exec: "cam2image"
-    args: "--ros-args -p depth:=1 -p show_camera:=true"
+    args: "--ros-args -p depth:=1 -p show_camera:=true --disable-stdout-logs"
     name: "cam"
     
       
@@ -17,10 +17,16 @@ launch:
     pkg: "jiwy_simulator"
     exec: "jiwy_simulator"
     name: "sim"
+    args: "--ros-args --disable-stdout-logs"
+    
+
+
 
 - node:
     pkg: "light_level"
     exec: "light_position"
+    parameters:
+      threshold: 254.0
 
 - node:
     pkg: "light_level"
@@ -38,3 +44,5 @@ launch:
       to: /moving_camera_output
     pkg: "image_tools"
     exec: "showimage"
+    args: "--ros-args --disable-stdout-logs"
+

@@ -22,7 +22,8 @@ public:
     subscription_ = this->create_subscription<sensor_msgs::msg::Image>(
       "image", 10, std::bind(&LightPosition::topic_callback, this, _1));
 
-    publisher_ = this->create_publisher<asdfr_interfaces::msg::Point2>("light_position", 10);
+    publisher_pixels_     = this->create_publisher<asdfr_interfaces::msg::Point2>("light_position", 10);
+    publisher_normalized_ = this->create_publisher<asdfr_interfaces::msg::Point2>("light_position", 10);
   }
 
 private:
@@ -46,16 +47,23 @@ private:
     cv::Moments moments = cv::moments(threshold_img, true);
     cv::Point center_of_mass = cv::Point(moments.m10 / moments.m00, moments.m01 / moments.m00);
 
-    auto message = asdfr_interfaces::msg::Point2();
+    auto message_pixels = asdfr_interfaces::msg::Point2();
+    auto message_normalized = asdfr_interfaces::msg::Point2();
 
-    message.x = center_of_mass.x;
-    message.y = center_of_mass.y;
+    message_pixels.x = center_of_mass.x;
+    message_pixels.y = center_of_mass.y;
 
-    publisher_->publish(message);
+    message_normalized.x = center_of_mass.x / threshold_img.size[0];
+    message_normalized.y = center_of_mass.y / threshold_img.size[1];
+
+
+    publisher_pixels_->publish(message_pixels);
+    publisher_normalized_->publish(message_normalized);
   }
   
   rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr subscription_;
-  rclcpp::Publisher<asdfr_interfaces::msg::Point2>::SharedPtr publisher_;
+  rclcpp::Publisher<asdfr_interfaces::msg::Point2>::SharedPtr publisher_pixels_;
+  rclcpp::Publisher<asdfr_interfaces::msg::Point2>::SharedPtr publisher_normalized_;
 };
 
 int main(int argc, char * argv[])
