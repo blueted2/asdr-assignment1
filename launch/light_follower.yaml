@@ -1,0 +1,38 @@
+launch:
+- node:
+    pkg: "image_tools"
+    exec: "cam2image"
+    args: "--ros-args -p depth:=1 -p show_camera:=true"
+    name: "cam"
+    #image out
+    
+- node:
+    pkg: "image_tools"
+    exec: "showimage"
+    name: "show"
+    remap:
+    - 
+      to: /moving_camera_output
+      from: /image
+    #image in
+
+
+- node:
+    remap:
+    - 
+      to: /image
+      from: /webcam_input
+
+    pkg: "jiwy_simulator"
+    exec: "jiwy_simulator"
+    name: "sim"
+
+- node:
+    pkg: "light_level"
+    exec: "light_position"
+    name: "LP"
+
+
+- node:
+    pkg: "light_level"
+    exec: "closed_loop"
