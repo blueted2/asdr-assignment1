@@ -57,7 +57,6 @@ private:
     new_setpoint_pub_->publish(message);
   }
   
-  // rclcpp::Subscription<asdfr_interfaces::msg::Point2>::SharedPtr setpoint_sub_;
   rclcpp::Subscription<asdfr_interfaces::msg::Point2>::SharedPtr light_pos_sub_;
   rclcpp::Publisher<asdfr_interfaces::msg::Point2>::SharedPtr new_setpoint_pub_;
 

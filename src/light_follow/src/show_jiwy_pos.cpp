@@ -55,8 +55,7 @@ private:
     const double pixels_per_rad_y = 240 / 0.6;
 
     // image has coordinates (-0.8, 0.8) in x and (-0.6, 0.6) in y
-    // draw a rectangle centered on the position with width 0.8 and height 0.6
-    // rectangle top left corner in pixels
+    // convert to pixel coordinates
     int x = (pos_in_rads_.x - 0.4) * pixels_per_rad_x + 320;
     int y = (-pos_in_rads_.y - 0.3) * pixels_per_rad_y + 240;
 

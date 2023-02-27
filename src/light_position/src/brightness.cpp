@@ -36,7 +36,6 @@ private:
     // calculate mean light level
     cv::Scalar mean = cv::mean(gray);
 
-
     // get threshold from parameter
     int th = this->get_parameter("threshold").get_parameter_value().get<int>();
 

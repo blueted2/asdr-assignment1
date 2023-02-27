@@ -1,7 +1,4 @@
-<!-- description of packages -->
 # Packages
-
-<!-- create a table -->
 
 | Package | Description |
 | --- | --- |
@@ -10,7 +7,6 @@
 
 
 ## light_position
-
 
 ### Nodes
 
@@ -23,7 +19,6 @@
 
 ### Launch
 
-<!-- add "show_position" -->
 | Launch | Description |
 | --- | --- |
 | [show_position](src/light_position/launch/show_position.yaml) | Visualize the light position detection feature. |
@@ -31,8 +26,6 @@
 
 ## light_follow
 
-<!-- closed_light_follow, open_light_follow, setpoint_generator, show_jiwy_pos -->
-<!-- add these nodes to the table -->
 | Node | Description |
 | --- | --- |
 | [closed_light_follow](src/light_follow/src/closed_light_follow.cpp) | Subscribes to the light position and Jiwy's moving camera and controls Jiwy to follow the light in a closed-loop system. |
@@ -41,7 +34,6 @@
 | [show_jiwy_pos](src/light_follow/src/show_jiwy_pos.cpp) | Subscribes to Jiwy's position and the static camera, and overlays Jiwy field of view. |
 
 ### Launch
-<!-- add setpoint_test, open and closed -->
 | Launch | Description |
 | --- | --- |
 | [setpoint_test](src/light_follow/launch/setpoint_test.yaml) | Run the setpoint generator and watch Jiwy move towards the points. |
