@@ -2,6 +2,13 @@ launch:
 - node:
     pkg: light_position
     exec: fake_light
+    param:
+      -
+        name: "max_movement_per_update"
+        value: 0.4
+      -
+        name: "frames_per_new_position"
+        value: 5
     
 - node:
     pkg: "jiwy_simulator"
@@ -31,7 +38,7 @@ launch:
     remap:
     - 
       from: /image
-      to: /image_with_position
+      to: /image_with_light_pos
 
 - node:
     pkg: "light_follow"
@@ -44,8 +51,4 @@ launch:
     - 
       from: /image
       to: /moving_camera_output
-
-- node:
-    pkg: "image_tools"
-    exec: "showimage"
 

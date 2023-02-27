@@ -2,6 +2,10 @@ launch:
 - node:
     pkg: light_position
     exec: fake_light
+    param:
+      -
+        name: "max_movement_per_update"
+        value: 0.0
 
 - node:
     pkg: "jiwy_simulator"
