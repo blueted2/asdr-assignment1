@@ -1,0 +1,51 @@
+launch:
+- node:
+    pkg: light_position
+    exec: fake_light
+    
+- node:
+    pkg: "jiwy_simulator"
+    exec: "jiwy_simulator"
+    args: "--ros-args --disable-stdout-logs"
+    remap:
+    - 
+      from: /webcam_input
+      to: /image
+    
+- node:
+    pkg: "light_position"
+    exec: "light_position"
+    args: "--ros-args --disable-stdout-logs"
+    param:
+      -
+        name: "threshold"
+        value: 200.0
+
+- node:
+    pkg: light_position
+    exec: show_light_position
+
+- node:
+    pkg: image_tools
+    exec: showimage
+    remap:
+    - 
+      from: /image
+      to: /image_with_position
+
+- node:
+    pkg: "light_follow"
+    exec: open_light_follow
+
+- node:
+    pkg: "image_tools"
+    exec: "showimage"
+    remap:
+    - 
+      from: /image
+      to: /moving_camera_output
+
+- node:
+    pkg: "image_tools"
+    exec: "showimage"
+

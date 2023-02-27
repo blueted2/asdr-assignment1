@@ -1,27 +1,24 @@
 #include <functional>
 #include <memory>
 
-
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/image.hpp"
 #include "std_msgs/msg/bool.hpp"
 #include "cv_bridge/cv_bridge.h"
 
-#include "opencv2/highgui/highgui.hpp"
-
 using std::placeholders::_1;
 
-class ImageSubscriber : public rclcpp::Node
+class BrightnessNode : public rclcpp::Node
 {
 public:
-  ImageSubscriber()
-  : Node("image_subscriber")
+  BrightnessNode()
+  : Node("brightness_node")
   {
 
     this->declare_parameter("threshold", 5);
 
     subscription_ = this->create_subscription<sensor_msgs::msg::Image>(
-      "image", 10, std::bind(&ImageSubscriber::topic_callback, this, _1));
+      "image", 10, std::bind(&BrightnessNode::topic_callback, this, _1));
 
     publisher_ = this->create_publisher<std_msgs::msg::Bool>("light_state", 10);
   }
@@ -39,10 +36,14 @@ private:
     // calculate mean light level
     cv::Scalar mean = cv::mean(gray);
 
-    // cv::imshow("windows", gray);
-    // cv::waitKey(1);
+
+    // get threshold from parameter
     int th = this->get_parameter("threshold").get_parameter_value().get<int>();
+
+    // as this image is grayscale, only one channel is used
     double light_level = mean[0];
+
+    // compare light level to threshold
     bool light_state = light_level > th;
 
     auto message = std_msgs::msg::Bool();
@@ -60,7 +61,7 @@ private:
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<ImageSubscriber>());
+  rclcpp::spin(std::make_shared<BrightnessNode>());
   rclcpp::shutdown();
   return 0;
 }

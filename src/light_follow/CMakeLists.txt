@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(light_level)
+project(light_follow)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -11,25 +11,37 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(cv_bridge REQUIRED)
-find_package(OpenCV REQUIRED)
+
 find_package(asdfr_interfaces REQUIRED)
 
-add_executable(light_level src/light_level.cpp)
-add_executable(light_position src/light_position.cpp)
-add_executable(pix2rad src/pix2rad.cpp)
+add_executable(open_light_follow src/open_light_follow.cpp)
+add_executable(closed_light_follow src/closed_light_follow.cpp)
+add_executable(setpoint_generator src/setpoint_generator.cpp)
+add_executable(show_jiwy_pos src/show_jiwy_pos.cpp)
 
-ament_target_dependencies(light_level rclcpp std_msgs sensor_msgs cv_bridge OpenCV)
-ament_target_dependencies(light_position rclcpp std_msgs sensor_msgs cv_bridge OpenCV asdfr_interfaces)
-ament_target_dependencies(pix2rad rclcpp std_msgs sensor_msgs cv_bridge OpenCV asdfr_interfaces)
+ament_target_dependencies(open_light_follow rclcpp asdfr_interfaces)
+ament_target_dependencies(closed_light_follow rclcpp asdfr_interfaces)
+ament_target_dependencies(setpoint_generator rclcpp asdfr_interfaces)
+ament_target_dependencies(show_jiwy_pos rclcpp asdfr_interfaces sensor_msgs cv_bridge)
 
-install(TARGETS light_level
+
+install(TARGETS open_light_follow
   DESTINATION lib/${PROJECT_NAME})
 
-install(TARGETS light_position
+install(TARGETS closed_light_follow
   DESTINATION lib/${PROJECT_NAME})
 
-install(TARGETS pix2rad
+install(TARGETS setpoint_generator
   DESTINATION lib/${PROJECT_NAME})
+
+install(TARGETS show_jiwy_pos
+  DESTINATION lib/${PROJECT_NAME})
+
+# Install launch files.
+install(DIRECTORY
+  launch
+  DESTINATION share/${PROJECT_NAME}/
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

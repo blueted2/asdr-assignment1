@@ -1,0 +1,32 @@
+launch:
+
+- node:
+    pkg: light_position
+    exec: fake_light
+
+- node:
+    pkg: light_position
+    exec: light_position
+    args: "--ros-args --disable-stdout-logs"
+    param:
+      -
+        name: "threshold"
+        value: 200.0
+    
+- node:
+    pkg: light_position
+    exec: show_light_position
+
+- node:
+    pkg: image_tools
+    exec: showimage
+    output: screen
+    
+- node:
+    pkg: image_tools
+    exec: showimage
+    output: screen
+    remap:
+      - 
+        from: /image
+        to: /image_with_position

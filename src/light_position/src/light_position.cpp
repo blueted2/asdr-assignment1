@@ -1,13 +1,7 @@
-#include <functional>
-#include <memory>
-
-
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/image.hpp"
-#include "std_msgs/msg/bool.hpp"
 #include "cv_bridge/cv_bridge.h"
-#include "opencv2/highgui/highgui.hpp"
-#include "asdfr_interfaces/msg/point2.hpp" // 2D point (x and y coordinates)
+#include "asdfr_interfaces/msg/point2.hpp"
 
 using std::placeholders::_1;
 
@@ -22,7 +16,8 @@ public:
     subscription_ = this->create_subscription<sensor_msgs::msg::Image>(
       "image", 10, std::bind(&LightPosition::topic_callback, this, _1));
 
-    publisher_ = this->create_publisher<asdfr_interfaces::msg::Point2>("light_position", 10);
+    pos_in_pix_pub_     = this->create_publisher<asdfr_interfaces::msg::Point2>("position_pixels", 10);
+    pos_norm_pub_ = this->create_publisher<asdfr_interfaces::msg::Point2>("position_normalized", 10);
   }
 
 private:
@@ -46,16 +41,25 @@ private:
     cv::Moments moments = cv::moments(threshold_img, true);
     cv::Point center_of_mass = cv::Point(moments.m10 / moments.m00, moments.m01 / moments.m00);
 
-    auto message = asdfr_interfaces::msg::Point2();
+    auto message_pixels = asdfr_interfaces::msg::Point2();
+    auto message_normalized = asdfr_interfaces::msg::Point2();
 
-    message.x = center_of_mass.x;
-    message.y = center_of_mass.y;
+    message_pixels.x = center_of_mass.x;
+    message_pixels.y = center_of_mass.y;
 
-    publisher_->publish(message);
+    message_normalized.x = (center_of_mass.x / (double)threshold_img.cols) * 2 - 1;
+    message_normalized.y = (center_of_mass.y / (double)threshold_img.rows) * 2 - 1;
+
+    // log both the pixel and normalized coordinates
+    RCLCPP_INFO(this->get_logger(), "cog in pixels: (%d, %d); cog normalized: (%.2f, %.2f)", center_of_mass.x, center_of_mass.y, message_normalized.x, message_normalized.y);
+
+    pos_in_pix_pub_->publish(message_pixels);
+    pos_norm_pub_->publish(message_normalized);
   }
   
   rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr subscription_;
-  rclcpp::Publisher<asdfr_interfaces::msg::Point2>::SharedPtr publisher_;
+  rclcpp::Publisher<asdfr_interfaces::msg::Point2>::SharedPtr pos_in_pix_pub_;
+  rclcpp::Publisher<asdfr_interfaces::msg::Point2>::SharedPtr pos_norm_pub_;
 };
 
 int main(int argc, char * argv[])
