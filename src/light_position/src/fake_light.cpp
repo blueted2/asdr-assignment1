@@ -18,18 +18,29 @@ public:
     timer_ = this->create_wall_timer(period, timer_callback);
 
     image_pub_ = this->create_publisher<sensor_msgs::msg::Image>("image", 10);
+
+    // add paramter "frames_per_new_position" with default value 10
+    this->declare_parameter("frames_per_new_position", 10);
+
+    // add paramter "max_movement_per_update" with default value 0.1
+    this->declare_parameter("max_movement_per_update", 0.1f);
+    
   }
 
 private:
   
   void image_callback()
   {
+    // get the parameters
+    int frames_per_new_position = this->get_parameter("frames_per_new_position").as_int();
+    float max_movement_per_update = this->get_parameter("max_movement_per_update").as_double();
+
     static int i = 0;
-    if (i++ > 100) {
+    if (i++ > frames_per_new_position) {
 
       // pick two random numbers between -0.1 and 0.1
-      float x = 0.2f * ((float)rand() / RAND_MAX - 0.5f);
-      float y = 0.2f * ((float)rand() / RAND_MAX - 0.5f);
+      float x = max_movement_per_update * ((float)rand() / RAND_MAX - 0.5f);
+      float y = max_movement_per_update * ((float)rand() / RAND_MAX - 0.5f);
       
       // move the light in a random direction
       light_position.x += x;
