@@ -1,6 +1,5 @@
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/image.hpp"
-#include "cv_bridge/cv_bridge.h"
 #include "asdfr_interfaces/msg/point2.hpp"
 
 using std::placeholders::_1;
@@ -23,35 +22,54 @@ public:
 private:
   void topic_callback(const sensor_msgs::msg::Image & image) const
   {
-    // convert image to opencv format
-    cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(image, sensor_msgs::image_encodings::BGR8);
 
-    // convert to grayscale
-    cv::Mat gray;
-    cv::cvtColor(cv_ptr->image, gray, cv::COLOR_BGR2GRAY);
+    // Extract image dimensions
+    int width = image.width;
+    int height = image.height;
 
-    // get threshold from parameter
-    double threshold = this->get_parameter("threshold").as_double();
+    // Extract pixel data
+    const uint8_t* data = image.data.data();
 
-    // apply threshold
-    cv::Mat threshold_img;
-    cv::threshold(gray, threshold_img, threshold, 255, cv::THRESH_BINARY);
+    // Calculate total mass and COG
+    double totalMass = 0.0;
+    double xCog = 0.0;
+    double yCog = 0.0;
 
-    // calculate center of mass of light
-    cv::Moments moments = cv::moments(threshold_img, true);
-    cv::Point center_of_mass = cv::Point(moments.m10 / moments.m00, moments.m01 / moments.m00);
+    for (int x = 0; x < width; x++) {
+      for (int y = 0; y < height; y++) {
+
+        int index = (y * width + x) * 3;
+
+        // Calculate intensity
+        double intensity = (data[index] + data[index + 1] + data[index + 2]);
+
+
+        if (intensity < this->get_parameter("threshold").as_double()) {
+          continue;
+        }
+
+        // Update total mass and COG
+        totalMass += intensity;
+        xCog += x * intensity;
+        yCog += y * intensity;
+      }
+    }
+
+    xCog /= totalMass;
+    yCog /= totalMass;
+
 
     auto message_pixels = asdfr_interfaces::msg::Point2();
     auto message_normalized = asdfr_interfaces::msg::Point2();
 
-    message_pixels.x = center_of_mass.x;
-    message_pixels.y = center_of_mass.y;
+    message_pixels.x = xCog;
+    message_pixels.y = yCog;
 
-    message_normalized.x = (center_of_mass.x / (double)threshold_img.cols) * 2 - 1;
-    message_normalized.y = (center_of_mass.y / (double)threshold_img.rows) * 2 - 1;
+    message_normalized.x = (xCog / (double)width) * 2 - 1;
+    message_normalized.y = (yCog / (double)height) * 2 - 1;
 
     // log both the pixel and normalized coordinates
-    RCLCPP_INFO(this->get_logger(), "cog in pixels: (%d, %d); cog normalized: (%.2f, %.2f)", center_of_mass.x, center_of_mass.y, message_normalized.x, message_normalized.y);
+    RCLCPP_INFO(this->get_logger(), "cog in pixels: (%.2f, %.2f); cog normalized: (%.2f, %.2f)", xCog, yCog, message_normalized.x, message_normalized.y);
 
     pos_in_pix_pub_->publish(message_pixels);
     pos_norm_pub_->publish(message_normalized);

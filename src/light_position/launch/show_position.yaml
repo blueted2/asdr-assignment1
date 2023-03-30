@@ -7,7 +7,7 @@ launch:
 - node:
     pkg: light_position
     exec: light_position
-    args: "--ros-args --disable-stdout-logs"
+    # args: "--ros-args --disable-stdout-logs"
     param:
       -
         name: "threshold"
